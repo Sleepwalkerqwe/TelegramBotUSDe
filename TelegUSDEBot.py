@@ -5,7 +5,7 @@ from telegram.ext import Application, CommandHandler, ContextTypes
 import httpx
 
 # 🔧 Конфигурация
-BOT_TOKEN = "твой_токен_сюда"
+BOT_TOKEN = "8461719065:AAGJPOCpt6mWeb8k0rUEQIfdqtuFBAId5SY"
 CHAT_ID = 870085433
 
 # Настроим логирование
