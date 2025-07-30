@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 async def get_price():
     url = "https://api.coingecko.com/api/v3/simple/price?ids=ethena-usde&vs_currencies=usd"
     try:
-        async with httpx.AsyncClient(timeout=10) as client:
+        async with httpx.AsyncClient(timeout=60) as client:
             response = await client.get(url)
             if response.status_code == 429:
                 logging.warning("Получен 429 Too Many Requests от CoinGecko. Делаем паузу...")
