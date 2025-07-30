@@ -66,6 +66,18 @@ async def price_loop_handler(update, context):
         logging.error(f"Ошибка в /price_loop: {e}")
         await update.message.reply_text("Ошибка. Используй команду так: /price_loop n y (n и y — целые положительные числа)")
 
+# Команда /price — сразу показать текущий курс
+async def price_handler(update, context):
+    price = await get_price()
+    if price is not None:
+        text = f"Текущий курс USDe: {price} USD"
+    else:
+        text = "Не удалось получить текущий курс. Попробуйте позже."
+    await update.message.reply_text(text)
+
+# В основном блоке добавь этот хэндлер:
+
+
 async def on_startup(app):
     logging.info("Запускаем фоновую задачу мониторинга курса...")
     asyncio.create_task(monitor_price(app))
@@ -73,6 +85,7 @@ async def on_startup(app):
 if __name__ == "__main__":
     app = Application.builder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("price_loop", price_loop_handler))
+    app.add_handler(CommandHandler("price", price_handler))
     app.post_init = on_startup
 
     logging.info("Бот запущен и следит за курсом")
