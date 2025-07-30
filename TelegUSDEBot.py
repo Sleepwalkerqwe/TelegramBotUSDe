@@ -8,8 +8,8 @@ from telegram import Update
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-TELEGRAM_TOKEN = "твой_токен_сюда"
-CHAT_ID = "твой_чат_айди_сюда"
+TELEGRAM_TOKEN = "8461719065:AAGJPOCpt6mWeb8k0rUEQIfdqtuFBAId5SY"
+CHAT_ID = "870085433"
 USDE_ALERT_THRESHOLD = 1.98
 CHECK_INTERVAL = 30
 
