@@ -11,7 +11,7 @@ THRESHOLD = 0.98
 logging.basicConfig(level=logging.INFO)
 
 async def get_price():
-    url = "https://api.coingecko.com/api/v3/simple/price?ids=usde&vs_currencies=usd"
+    url = "https://api.coingecko.com/api/v3/simple/price?ids=ethena-usde&vs_currencies=usd"
     try:
         async with httpx.AsyncClient(timeout=10) as client:
             response = await client.get(url)
@@ -21,10 +21,8 @@ async def get_price():
                 return None
             response.raise_for_status()
             data = response.json()
-            price = data.get("usde", {}).get("usd")
-            if price is None:
-                logging.error(f"В ответе нет курса 'usde': {data}")
-            return price
+
+            return data["ethena-usde"]["usd"]
     except httpx.RequestError as e:
         logging.error(f"Ошибка запроса к CoinGecko: {e}")
         return None
