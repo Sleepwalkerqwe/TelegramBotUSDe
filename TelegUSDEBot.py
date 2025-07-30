@@ -55,18 +55,15 @@ async def send_price_periodically(n, y, app):
             logging.error(f"Ошибка при отправке курса: {e}")
         await asyncio.sleep(n * 60)
 
-# 🏁 main
-async def main():
+if __name__ == "__main__":
     app = Application.builder().token(BOT_TOKEN).build()
-
-    # Регистрируем команду
     app.add_handler(CommandHandler("price_loop", price_loop_handler))
 
-    # Запускаем фоновую задачу мониторинга курса
-    asyncio.create_task(monitor_price(app))
+    # Запускаем фоновую задачу мониторинга курса, когда бот стартует
+    async def on_startup(app):
+        asyncio.create_task(monitor_price(app))
+    app.post_init = on_startup
 
     logging.info("Бот запущен и следит за курсом")
-    await app.run_polling()
-
-if __name__ == "__main__":
-    asyncio.run(main())
+    # Запускаем polling **без** asyncio.run()
+    app.run_polling()
