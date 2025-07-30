@@ -10,27 +10,41 @@ THRESHOLD = 0.98
 
 logging.basicConfig(level=logging.INFO)
 
-# 📊 Получаем курс из API
 async def get_price():
     url = "https://api.coingecko.com/api/v3/simple/price?ids=usde&vs_currencies=usd"
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url, timeout=10)
-        data = response.json()
-        return data["usde"]["usd"]
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            response = await client.get(url)
+            if response.status_code == 429:
+                logging.warning("Получен 429 Too Many Requests от CoinGecko. Делаем паузу...")
+                await asyncio.sleep(10)  # пауза подольше при 429
+                return None
+            response.raise_for_status()
+            data = response.json()
+            price = data.get("usde", {}).get("usd")
+            if price is None:
+                logging.error(f"В ответе нет курса 'usde': {data}")
+            return price
+    except httpx.RequestError as e:
+        logging.error(f"Ошибка запроса к CoinGecko: {e}")
+        return None
+    except Exception as e:
+        logging.error(f"Неожиданная ошибка при получении курса: {e}")
+        return None
 
 # 🎯 Фоновая задача: проверка курса
 async def monitor_price(app):
     while True:
-        try:
-            price = await get_price()
+        price = await get_price()
+        if price is not None:
             logging.info(f"Текущий курс: {price}")
             if price < THRESHOLD:
                 text = f"⚠️ ВНИМАНИЕ! Курс упал ниже {THRESHOLD} USD!\nТекущий курс: {price} USD"
                 await app.bot.send_message(chat_id=CHAT_ID, text=text)
-            await asyncio.sleep(1)  # минимальная задержка
-        except Exception as e:
-            logging.error(f"Ошибка при проверке курса: {e}")
-            await asyncio.sleep(5)
+            await asyncio.sleep(5)  # хотя бы 5 секунд между запросами
+        else:
+            # Если цена не получена, подождать дольше
+            await asyncio.sleep(10)
 
 # 🕒 Команда: /price_loop n y
 async def price_loop_handler(update, context):
