@@ -1,3 +1,5 @@
+import nest_asyncio
+nest_asyncio.apply()
 import asyncio
 import logging
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
