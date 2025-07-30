@@ -1,3 +1,20 @@
+# в начале
+from aiohttp import web
+
+# функция для обработки GET /
+async def handle(request):
+    return web.Response(text="I'm alive!")
+
+# функция старта сервера
+async def start_webserver():
+    app = web.Application()
+    app.router.add_get('/', handle)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', 8080)
+    await site.start()
+    print("✅ Web server started on port 8080")
+
 import asyncio
 import logging
 from telegram.ext import Application, CommandHandler
@@ -82,6 +99,10 @@ async def on_startup(app):
     logging.info("Запускаем фоновую задачу мониторинга курса...")
     asyncio.create_task(monitor_price(app))
 
+    asyncio.create_task(monitor_price(app))
+    asyncio.create_task(start_webserver())
+
+
 if __name__ == "__main__":
     app = Application.builder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("price_loop", price_loop_handler))
@@ -90,3 +111,23 @@ if __name__ == "__main__":
 
     logging.info("Бот запущен и следит за курсом")
     app.run_polling()
+
+from aiohttp import web
+
+# Функция-обработчик запроса
+async def handle(request):
+    return web.Response(text="I'm alive!")
+
+# Функция запуска веб-сервера
+async def start_keep_alive():
+    app = web.Application()
+    app.router.add_get('/', handle)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', 8080)  # Порт 8080
+    await site.start()
+    logging.info("Keep-alive сервер запущен на порту 8080")
+
+async def on_startup(app):
+    asyncio.create_task(monitor_price(app))
+    asyncio.create_task(start_keep_alive())
