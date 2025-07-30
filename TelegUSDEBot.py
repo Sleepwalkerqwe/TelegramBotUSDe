@@ -2,7 +2,9 @@
 import datetime
 
 def now_time():
-    return datetime.datetime.now().strftime("%H:%M:%S %d.%m.%Y")
+    # берём текущее локальное время и прибавляем 2 часа
+    t = datetime.datetime.now() + datetime.timedelta(hours=2)
+    return t.strftime("%H:%M:%S %d.%m.%Y")
 
 from aiohttp import web
 
