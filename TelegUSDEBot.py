@@ -44,9 +44,13 @@ async def get_price():
             response = await client.get(url)
             if response.status_code == 429:
                 logging.warning("Получен 429 Too Many Requests от CoinGecko. Делаем паузу 60 секунд...")
-                await asyncio.sleep(120)
-                # возвращаем None, чтобы наверху знали, что это 429
-                return None
+                await asyncio.sleep(60)
+                if last_price is not None:
+                    logging.info(f"Возвращаю последний сохранённый курс: {last_price} USD (на {last_price_time})")
+                    return last_price
+                else:
+                    return None
+
             response.raise_for_status()
             data = response.json()
             price = data["ethena-usde"]["usd"]
