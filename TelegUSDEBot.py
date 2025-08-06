@@ -29,7 +29,7 @@ import httpx
 
 BOT_TOKEN = "8461719065:AAGJPOCpt6mWeb8k0rUEQIfdqtuFBAId5SY"
 CHAT_ID = 870085433
-THRESHOLD = 0.98
+THRESHOLD = 1
 
 logging.basicConfig(level=logging.INFO)
 
